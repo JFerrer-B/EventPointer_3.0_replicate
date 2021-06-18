@@ -1,0 +1,1 @@
+directory where to save the output of EP_BAM
