@@ -1,0 +1,47 @@
+#replicate_Salmon_step
+
+## index steps:
+
+# 1. create salmon index
+# 2. run salmon (an example for 1M case is displeyed)
+
+
+
+## 1. build salmon index
+
+## index for 50, 75 and 100 nt
+$HOME/salmon-latest_linux_x86_64/bin/salmon index -t ./simulation_data/annotation/refseq_hg19_unique.fa \
+-i ./simulation_data/annotation/salmon_index -k 31
+
+## index for 25 nt
+
+## from salmon tutorial: "We find that a k of 31 seems to work well for reads of 75bp or longer, 
+                           but you might consider a smaller k if you plan to deal with shorter reads"
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon index -t ./simulation_data/annotation/refseq_hg19_unique.fa \
+-i ./simulation_data/annotation/salmon_index_k21 -k 21
+
+
+
+## 2. run salmon
+
+### example for 1M is displayed:
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513329_1.fq -2 ./simulation_data/fastqs/1M/SRR1513329_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513329 &
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513329_switched_A5_A3_1.fq -2 ./simulation_data/fastqs/1M/SRR1513329_switched_A5_A3_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513329_switched_A5_A3 &
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513329_switched_SE_1.fq -2 ./simulation_data/fastqs/1M/SRR1513329_switched_SE_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513329_switched_SE 
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513330_1.fq -2 ./simulation_data/fastqs/1M/SRR1513330_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513330 &
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513330_switched_A5_A3_1.fq -2 ./simulation_data/fastqs/1M/SRR1513330_switched_A5_A3_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513330_switched_A5_A3 &
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513330_switched_SE_1.fq -2 ./simulation_data/fastqs/1M/SRR1513330_switched_SE_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513330_switched_SE &
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513331_1.fq -2 ./simulation_data/fastqs/1M/SRR1513331_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513331
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513331_switched_A5_A3_1.fq -2 ./simulation_data/fastqs/1M/SRR1513331_switched_A5_A3_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513331_switched_A5_A3 &
+
+$HOME/salmon-latest_linux_x86_64/bin/salmon quant -l A -i ./simulation_data/annotation/salmon_index  -1 ./simulation_data/fastqs/1M/SRR1513331_switched_SE_1.fq -2 ./simulation_data/fastqs/1M/SRR1513331_switched_SE_2.fq -p 2 --validateMappings --numBootstraps 100  -o ./simulation_data/salmon_output/1M/SRR1513331_switched_SE &
+

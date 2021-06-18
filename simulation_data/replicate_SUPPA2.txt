@@ -1,0 +1,86 @@
+#replicate_SUPPA2
+
+## index of this step:
+
+#1. suppa2 detection step
+#2. prepare data for suppa2 input (example for 1M is displayed)
+#3. run getpsi (example for 1M is displayed)
+#4. run statistic (example for 1M is displayed)
+
+
+##1. suppa2 detection step
+
+
+suppa.py generateEvents -p \
+ -i ./simulacion_data/annotation/refseq_hg19.formatted.gtf \
+ -o ./simulacion_data/events_refseq_hg19/refseq_hg19.events \
+ -e SE SS MX RI FL -f ioe
+
+## put all togetherin the same file. running the following in the /simulacion_data/events_refseq_hg19 directory:
+
+awk '
+FNR==1 && NR!=1 { while (/^seqname/) getline; }
+1 {print}
+' ./*ioe > ./refseq_hg19.events_formatted.pooled.ioe
+
+
+
+
+
+
+##2. prepare data for suppa2 input:
+
+# the following correspond to a R code:
+
+----
+
+read <- "1M"
+library(tximport)
+
+PathSamples <- dir(paste0("./simulacion_data/salmon_output/",read),full.names = TRUE)
+namesfiles <- gsub(".*/","",PathSamples)
+PathSamples <- paste0(PathSamples,"/quant.sf")
+names(PathSamples) <- namesfiles
+sapply(PathSamples,file.exists)
+txi.inf.rep <- tximport(PathSamples, type = "salmon", txOut = TRUE,countsFromAbundance="no",dropInfReps = FALSE)
+sum(txi.inf.rep$abundance[,3]) #son tpm
+
+mydata <- txi.inf.rep$abundance
+head(mydata)
+originals <- mydata[,c("SRR1513329","SRR1513330","SRR1513331")]
+switched_se <- mydata[,c("SRR1513329_switched_SE","SRR1513330_switched_SE","SRR1513331_switched_SE")]
+switched_a5_a3 <- mydata[,c("SRR1513329_switched_A5_A3","SRR1513330_switched_A5_A3","SRR1513331_switched_A5_A3")]
+
+head(originals)
+head(switched_se)
+head(switched_a5_a3)
+
+
+rownames(originals) <- gsub("hg19_refGene_","",rownames(originals))
+rownames(switched_se) <- gsub("hg19_refGene_","",rownames(switched_se))
+rownames(switched_a5_a3) <- gsub("hg19_refGene_","",rownames(switched_a5_a3))
+
+
+
+write.table(x=originals,file = paste0("./simulacion_data/salmon_output/",read,"/originals.txt"),quote = F,sep = "\t")
+write.table(x=switched_se,file = paste0("./simulacion_data/salmon_output/",read,"/switched_se.txt"),quote = F,sep = "\t")
+write.table(x=switched_a5_a3,file = paste0("./simulacion_data/salmon_output/",read,"/switched_a5_a3.txt"),quote = F,sep = "\t")
+
+----
+
+
+## 3. run getpsi 
+
+suppa.py psiPerEvent --ioe ./simulacion_data/events_refseq_hg19/refseq_hg19.events_formatted.pooled.ioe  --expression-file ./simulacion_data/salmon_output/1M/originals.txt -o ./simulacion_data/salmon_output/1M/originals
+
+suppa.py psiPerEvent --ioe ./simulacion_data/events_refseq_hg19/refseq_hg19.events_formatted.pooled.ioe  --expression-file ./simulacion_data/salmon_output/1M/switched_a5_a3.txt -o ./simulacion_data/salmon_output/1M/switched_a5_a3
+
+suppa.py psiPerEvent --ioe ./simulacion_data/events_refseq_hg19/refseq_hg19.events_formatted.pooled.ioe  --expression-file ./simulacion_data/salmon_output/1M/switched_se.txt -o ./simulacion_data/salmon_output/1M/switched_se
+
+
+## 3. run statistic
+
+suppa.py diffSplice --method empirical  --input ./simulacion_data/events_refseq_hg19/refseq_hg19.events_formatted.pooled.ioe  --psi ./simulacion_data/salmon_output/1M/originals.psi ./simulacion_data/salmon_output/1M/switched_a5_a3.psi  --tpm ./simulacion_data/salmon_output/1M/originals.txt ./simulacion_data/salmon_output/1M/switched_a5_a3.txt --area 1000 --lower-bound 0 -gc -o ./simulacion_data/salmon_output/1M/a5_a3_VS_original
+
+
+suppa.py diffSplice --method empirical  --input ./simulacion_data/events_refseq_hg19/refseq_hg19.events_formatted.pooled.ioe  --psi ./simulacion_data/salmon_output/1M/originals.psi ./simulacion_data/salmon_output/1M/switched_se.psi  --tpm ./simulacion_data/salmon_output/1M/originals.txt ./simulacion_data/salmon_output/1M/switched_se.txt --area 1000 --lower-bound 0 -gc -o ./simulacion_data/salmon_output/1M/se_VS_original
