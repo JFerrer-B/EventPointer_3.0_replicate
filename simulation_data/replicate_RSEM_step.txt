@@ -1,0 +1,809 @@
+# replicate RSEM step
+
+## index of steps:
+
+# 1. generate reference from annotation file
+# 2. download .fastq files
+# 3. Get the transcript quantification
+# 4. run the simulations
+
+
+## 1. generate reference from annotation file
+
+
+rsem-prepare-reference --bowtie2 --bowtie2-path path_to_bowtie/bowtie2-2.4.1-linux-x86_64 \
+./simulation_data/annotation/refseq_hg19_unique.fa \
+./simulation_data/tra2_simulated_reads/rsem_reference
+
+
+
+
+## 2. download .fastq files
+## .fastq files were downloaded using aspera and stored in ./simulation_data
+## running from ./simulation_data directory_
+
+mkdir SRR1513329
+cd SRR1513329
+ascp -QT -l 1000m -P33001 -i path_to_aspera_key \
+era-fasp@fasp.sra.ebi.ac.uk:vol1/fastq/SRR151/009/SRR1513329/SRR1513329_1.fastq.gz .
+
+ascp -QT -l 1000m -P33001 -i path_to_aspera_key \
+era-fasp@fasp.sra.ebi.ac.uk:vol1/fastq/SRR151/009/SRR1513329/SRR1513329_2.fastq.gz .
+
+cd ..
+
+
+
+mkdir SRR1513330
+cd SRR1513330
+ascp -QT -l 1000m -P33001 -i path_to_aspera_key \
+era-fasp@fasp.sra.ebi.ac.uk:vol1/fastq/SRR151/000/SRR1513330/SRR1513330_1.fastq.gz .
+
+ascp -QT -l 1000m -P33001 -i path_to_aspera_key \
+era-fasp@fasp.sra.ebi.ac.uk:vol1/fastq/SRR151/000/SRR1513330/SRR1513330_2.fastq.gz .
+
+cd ..
+
+
+
+
+mkdir SRR1513331
+cd SRR1513331
+
+ascp -QT -l 1000m -P33001 -i path_to_aspera_key \
+era-fasp@fasp.sra.ebi.ac.uk:vol1/fastq/SRR151/001/SRR1513331/SRR1513331_1.fastq.gz .
+
+ascp -QT -l 1000m -P33001 -i path_to_aspera_key \
+era-fasp@fasp.sra.ebi.ac.uk:vol1/fastq/SRR151/001/SRR1513331/SRR1513331_2.fastq.gz .
+
+
+
+
+
+## 3. Get the transcript quantification
+
+# running from EventPointer3.0_replicate directory:
+
+
+#######################################################
+## 120M
+#######################################################
+
+
+rsem-calculate-expression --bowtie2 --bowtie2-path path_to_bowtie/bowtie2-2.4.1-linux-x86_64 \
+-p 8 --estimate-rspd --append-names --paired-end \
+./simulation_data/SRR1513329/SRR1513329_1.fastq.gz \
+./simulation_data/SRR1513329/SRR1513329_2.fastq.gz \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329
+
+
+rsem-calculate-expression --bowtie2 --bowtie2-path path_to_bowtie/bowtie2-2.4.1-linux-x86_64 \
+-p 8 --estimate-rspd --append-names --paired-end \
+./simulation_data/SRR1513330/SRR1513330_1.fastq.gz \
+./simulation_data/SRR1513330/SRR1513330_2.fastq.gz \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330
+
+
+rsem-calculate-expression --bowtie2 --bowtie2-path path_to_bowtie/bowtie2-2.4.1-linux-x86_64 \
+-p 8 --estimate-rspd --append-names --paired-end \
+./simulation_data/SRR1513331/SRR1513331_1.fastq.gz \
+./simulation_data/SRR1513331/SRR1513331_2.fastq.gz \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331
+
+
+## 4. run the simulations
+
+#For simulating 120 million reads
+
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513329 \
+--seed 0
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513330 \
+--seed 0
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513331 \
+--seed 0
+
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_SE.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513329_switched_SE \
+--seed 0
+
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_SE.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513330_switched_SE \
+--seed 0
+
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513331_switched_SE.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513331_switched_SE \
+--seed 0
+
+
+
+
+###
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_A5_A3.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513329_switched_A5_A3 \
+--seed 0
+
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_A5_A3.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513330_switched_A5_A3 \
+--seed 0
+
+
+rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513331_switched_A5_A3.tpm 0.0987 120000000 \
+./simulation_data/fastqs/120M/SRR1513331_switched_A5_A3 \
+--seed 0
+
+
+
+###################################################################################################################
+## 5M
+###################################################################################################################
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513329 \
+--seed 0 > SRR1513329.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513330 \
+--seed 0 > SRR1513330.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513331 \
+--seed 0 > SRR1513331.out &
+
+
+###
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_SE.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513329_switched_SE \
+--seed 0 > SRR1513329_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_SE.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513330_switched_SE \
+--seed 0 > SRR1513330_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_SE.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513331_switched_SE \
+--seed 0 > SRR1513331_switched_SE.out &
+
+
+###
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_A5_A3.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513329_switched_A5_A3 \
+--seed 0 > SRR1513329_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_A5_A3.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513330_switched_A5_A3 \
+--seed 0 > SRR1513330_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_A5_A3.tpm 0.0987 5000000 \
+./simulation_data/fastqs/5M/SRR1513331_switched_A5_A3 \
+--seed 0 > SRR1513331_switched_A5_A3.out &
+
+
+
+###################################################################################################################
+## 10M
+###################################################################################################################
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513329 \
+--seed 0 > SRR1513329.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513330 \
+--seed 0 > SRR1513330.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513331 \
+--seed 0 > SRR1513331.out &
+
+
+
+###
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_SE.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513329_switched_SE \
+--seed 0 > SRR1513329_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_SE.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513330_switched_SE \
+--seed 0 > SRR1513330_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_SE.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513331_switched_SE \
+--seed 0 > SRR1513331_switched_SE.out &
+
+
+###
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_A5_A3.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513329_switched_A5_A3 \
+--seed 0 > SRR1513329_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_A5_A3.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513330_switched_A5_A3 \
+--seed 0 > SRR1513330_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_A5_A3.tpm 0.0987 10000000 \
+./simulation_data/fastqs/10M/SRR1513331_switched_A5_A3 \
+--seed 0 > SRR1513331_switched_A5_A3.out &
+
+
+
+###################################################################################################################
+## 25M
+###################################################################################################################
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513329 \
+--seed 0 > SRR1513329.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513330 \
+--seed 0 > SRR1513330.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513331 \
+--seed 0 > SRR1513331.out &
+
+
+###
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_SE.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513329_switched_SE \
+--seed 0 > SRR1513329_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_SE.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513330_switched_SE \
+--seed 0 > SRR1513330_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_SE.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513331_switched_SE \
+--seed 0 > SRR1513331_switched_SE.out &
+
+
+###
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_A5_A3.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513329_switched_A5_A3 \
+--seed 0 > SRR1513329_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_A5_A3.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513330_switched_A5_A3 \
+--seed 0 > SRR1513330_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_A5_A3.tpm 0.0987 25000000 \
+./simulation_data/fastqs/25M/SRR1513331_switched_A5_A3 \
+--seed 0 > SRR1513331_switched_A5_A3.out &
+
+
+
+
+###################################################################################################################
+## 60M
+###################################################################################################################
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513329 \
+--seed 0 > SRR1513329.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513330 \
+--seed 0 > SRR1513330.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513331 \
+--seed 0 > SRR1513331.out &
+
+
+###
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_SE.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513329_switched_SE \
+--seed 0 > SRR1513329_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_SE.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513330_switched_SE \
+--seed 0 > SRR1513330_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_SE.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513331_switched_SE \
+--seed 0 > SRR1513331_switched_SE.out &
+
+
+####
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_A5_A3.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513329_switched_A5_A3 \
+--seed 0 > SRR1513329_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_A5_A3.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513330_switched_A5_A3 \
+--seed 0 > SRR1513330_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_A5_A3.tpm 0.0987 60000000 \
+./simulation_data/fastqs/60M/SRR1513331_switched_A5_A3 \
+--seed 0 > SRR1513331_switched_A5_A3.out &
+
+
+#######################
+## 1M
+#######################
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513329 \
+--seed 0 > SRR1513329.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513330 \
+--seed 0 > SRR1513330.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513331 \
+--seed 0 > SRR1513331.out &
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_SE.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513329_switched_SE \
+--seed 0 > SRR1513329_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_SE.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513330_switched_SE \
+--seed 0 > SRR1513330_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_SE.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513331_switched_SE \
+--seed 0 > SRR1513331_switched_SE.out &
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_A5_A3.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513329_switched_A5_A3 \
+--seed 0 > SRR1513329_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_A5_A3.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513330_switched_A5_A3 \
+--seed 0 > SRR1513330_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_A5_A3.tpm 0.0987 1000000 \
+./simulation_data/fastqs/1M/SRR1513331_switched_A5_A3 \
+--seed 0 > SRR1513331_switched_A5_A3.out &
+
+
+###########
+## 2M
+###########
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513329 \
+--seed 0 > SRR1513329.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513330 \
+--seed 0 > SRR1513330.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513331 \
+--seed 0 > SRR1513331.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_SE.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513329_switched_SE \
+--seed 0 > SRR1513329_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_SE.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513330_switched_SE \
+--seed 0 > SRR1513330_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_SE.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513331_switched_SE \
+--seed 0 > SRR1513331_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_A5_A3.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513329_switched_A5_A3 \
+--seed 0 > SRR1513329_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_A5_A3.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513330_switched_A5_A3 \
+--seed 0 > SRR1513330_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_A5_A3.tpm 0.0987 2000000 \
+./simulation_data/fastqs/2M/SRR1513331_switched_A5_A3 \
+--seed 0 > SRR1513331_switched_A5_A3.out &
+
+
+#############
+## 3M
+#############
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513329 \
+--seed 0 > SRR1513329.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513330 \
+--seed 0 > SRR1513330.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513331 \
+--seed 0 > SRR1513331.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_SE.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513329_switched_SE \
+--seed 0 > SRR1513329_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_SE.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513330_switched_SE \
+--seed 0 > SRR1513330_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_SE.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513331_switched_SE \
+--seed 0 > SRR1513331_switched_SE.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513329.stat/SRR1513329.model \
+./simulation_data/simulated_reads/SRR1513329_switched_A5_A3.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513329_switched_A5_A3 \
+--seed 0 > SRR1513329_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513330.stat/SRR1513330.model \
+./simulation_data/simulated_reads/SRR1513330_switched_A5_A3.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513330_switched_A5_A3 \
+--seed 0 > SRR1513330_switched_A5_A3.out &
+
+
+nohup rsem-simulate-reads \
+./simulation_data/tra2_simulated_reads/rsem_reference \
+./simulation_data/tra2_simulated_reads/quantification/SRR1513331.stat/SRR1513331.model \
+./simulation_data/simulated_reads/SRR1513331_switched_A5_A3.tpm 0.0987 3000000 \
+./simulation_data/fastqs/3M/SRR1513331_switched_A5_A3 \
+--seed 0 > SRR1513331_switched_A5_A3.out &
+
+
+
+######### 
+25 nt
+#########
+
+
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513329_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513329_1.fq
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513329_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513329_2.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513329_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513329_switched_A5_A3_1.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513329_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513329_switched_A5_A3_2.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513329_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513329_switched_SE_1.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513329_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513329_switched_SE_2.fq
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513330_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513330_1.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513330_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513330_2.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513330_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513330_switched_A5_A3_1.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513330_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513330_switched_A5_A3_2.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513330_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513330_switched_SE_1.fq
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513330_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513330_switched_SE_2.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513331_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513331_1.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513331_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513331_2.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513331_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513331_switched_A5_A3_1.fq
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513331_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513331_switched_A5_A3_2.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513331_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513331_switched_SE_1.fq &
+cutadapt -u -77 ./simulation_data/fastqs/25M/SRR1513331_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/25nt/SRR1513331_switched_SE_2.fq &
+
+######
+50 nt
+######
+
+
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513329_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513329_1.fq 
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513329_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513329_2.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513329_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513329_switched_A5_A3_1.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513329_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513329_switched_A5_A3_2.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513329_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513329_switched_SE_1.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513329_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513329_switched_SE_2.fq
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513330_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513330_1.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513330_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513330_2.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513330_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513330_switched_A5_A3_1.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513330_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513330_switched_A5_A3_2.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513330_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513330_switched_SE_1.fq
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513330_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513330_switched_SE_2.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513331_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513331_1.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513331_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513331_2.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513331_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513331_switched_A5_A3_1.fq
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513331_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513331_switched_A5_A3_2.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513331_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513331_switched_SE_1.fq &
+cutadapt -u -52 ./simulation_data/fastqs/25M/SRR1513331_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/50nt/SRR1513331_switched_SE_2.fq &
+
+######
+75 mt
+######
+
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513329_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513329_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513329_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513329_2.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513329_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513329_switched_A5_A3_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513329_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513329_switched_A5_A3_2.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513329_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513329_switched_SE_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513329_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513329_switched_SE_2.fq
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513330_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513330_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513330_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513330_2.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513330_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513330_switched_A5_A3_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513330_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513330_switched_A5_A3_2.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513330_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513330_switched_SE_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513330_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513330_switched_SE_2.fq 
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513331_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513331_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513331_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513331_2.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513331_switched_A5_A3_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513331_switched_A5_A3_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513331_switched_A5_A3_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513331_switched_A5_A3_2.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513331_switched_SE_1.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513331_switched_SE_1.fq &
+cutadapt -u -27 ./simulation_data/fastqs/25M/SRR1513331_switched_SE_2.fq -o ./simulation_data/fastqs/different_nt/75nt/SRR1513331_switched_SE_2.fq &
+
+
+
