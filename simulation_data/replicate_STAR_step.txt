@@ -1,0 +1,94 @@
+# genereta BAM for rMATS, MAJIQ and EP_BAM
+
+
+# index steps:
+
+# 1. create reference (example for 100 nt is displayed)
+# 2. run BAM with rMATS parameters (example for 1M is displayed)
+# 3. fix "chr" annotation for MAJIQ (example for 1M is displayed)
+
+
+## 1. create reference (example for 100 nt is displayed)
+
+STAR --runThreadN 12 \
+--runMode genomeGenerate \
+--genomeDir ./simulation_data/annotation/starDir_100nt/ \
+--genomeFastaFiles ./simulation_data/annotation/Homo_sapiens.GRCh37.75.dna.primary_assembly.fa \
+--sjdbGTFfile ./simulation_data/annotation/refseq_hg19.formatted_STAR.gtf \
+--sjdbOverhang 99 \
+--limitGenomeGenerateRAM 33977357920
+
+
+
+
+## 2. run BAM with rMATS parameters (example for 1M is displayed)
+
+
+STAR --runThreadN 16  --genomeDir ./simulation_data/SUPPA_supplementary_data/annotation/starDir_100nt/  --readFilesIn ./simulation_data/fastqs/1M/SRR1513330_1.fq ./simulation_data/fastqs/1M/SRR1513330_2.fq   --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3  --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./simulation_data/BAM_rMATS/1M/SRR1513330 
+STAR --runThreadN 16  --genomeDir ./simulation_data/SUPPA_supplementary_data/annotation/starDir_100nt/  --readFilesIn ./simulation_data/fastqs/1M/SRR1513331_1.fq ./simulation_data/fastqs/1M/SRR1513331_2.fq   --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3  --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./simulation_data/BAM_rMATS/1M/SRR1513331 
+STAR --runThreadN 16  --genomeDir ./simulation_data/SUPPA_supplementary_data/annotation/starDir_100nt/  --readFilesIn ./simulation_data/fastqs/1M/SRR1513329_switched_A5_A3_1.fq ./simulation_data/fastqs/1M/SRR1513329_switched_A5_A3_2.fq   --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3  --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./simulation_data/BAM_rMATS/1M/SRR1513329_switched_A5_A3 
+STAR --runThreadN 16  --genomeDir ./simulation_data/SUPPA_supplementary_data/annotation/starDir_100nt/  --readFilesIn ./simulation_data/fastqs/1M/SRR1513330_switched_A5_A3_1.fq ./simulation_data/fastqs/1M/SRR1513330_switched_A5_A3_2.fq   --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3  --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./simulation_data/BAM_rMATS/1M/SRR1513330_switched_A5_A3 
+STAR --runThreadN 16  --genomeDir ./simulation_data/SUPPA_supplementary_data/annotation/starDir_100nt/  --readFilesIn ./simulation_data/fastqs/1M/SRR1513331_switched_A5_A3_1.fq ./simulation_data/fastqs/1M/SRR1513331_switched_A5_A3_2.fq   --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3  --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./simulation_data/BAM_rMATS/1M/SRR1513331_switched_A5_A3 
+STAR --runThreadN 16  --genomeDir ./simulation_data/SUPPA_supplementary_data/annotation/starDir_100nt/  --readFilesIn ./simulation_data/fastqs/1M/SRR1513329_switched_SE_1.fq ./simulation_data/fastqs/1M/SRR1513329_switched_SE_2.fq   --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3  --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./simulation_data/BAM_rMATS/1M/SRR1513329_switched_SE 
+STAR --runThreadN 16  --genomeDir ./simulation_data/SUPPA_supplementary_data/annotation/starDir_100nt/  --readFilesIn ./simulation_data/fastqs/1M/SRR1513330_switched_SE_1.fq ./simulation_data/fastqs/1M/SRR1513330_switched_SE_2.fq   --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3  --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./simulation_data/BAM_rMATS/1M/SRR1513330_switched_SE 
+STAR --runThreadN 16  --genomeDir ./simulation_data/SUPPA_supplementary_data/annotation/starDir_100nt/  --readFilesIn ./simulation_data/fastqs/1M/SRR1513331_switched_SE_1.fq ./simulation_data/fastqs/1M/SRR1513331_switched_SE_2.fq   --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3  --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./simulation_data/BAM_rMATS/1M/SRR1513331_switched_SE 
+ 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513329Aligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513329Aligned.sortedByCoord.out.bam 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513330Aligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513330Aligned.sortedByCoord.out.bam 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513331Aligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513331Aligned.sortedByCoord.out.bam 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513329_switched_A5_A3Aligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513329_switched_A5_A3Aligned.sortedByCoord.out.bam 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513330_switched_A5_A3Aligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513330_switched_A5_A3Aligned.sortedByCoord.out.bam 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513331_switched_A5_A3Aligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513331_switched_A5_A3Aligned.sortedByCoord.out.bam 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513329_switched_SEAligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513329_switched_SEAligned.sortedByCoord.out.bam 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513330_switched_SEAligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513330_switched_SEAligned.sortedByCoord.out.bam 
+samtools sort -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513331_switched_SEAligned.out.bam > ./simulation_data/BAM_rMATS/1M/SRR1513331_switched_SEAligned.sortedByCoord.out.bam 
+ 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513329Aligned.sortedByCoord.out.bam 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513330Aligned.sortedByCoord.out.bam 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513331Aligned.sortedByCoord.out.bam 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513329_switched_A5_A3Aligned.sortedByCoord.out.bam 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513330_switched_A5_A3Aligned.sortedByCoord.out.bam 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513331_switched_A5_A3Aligned.sortedByCoord.out.bam 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513329_switched_SEAligned.sortedByCoord.out.bam 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513330_switched_SEAligned.sortedByCoord.out.bam 
+samtools index -@ 16 ./simulation_data/BAM_rMATS/1M/SRR1513331_switched_SEAligned.sortedByCoord.out.bam 
+
+
+
+## 3. fix "chr" annotation for MAJIQ (example for 1M is displayed)
+
+
+#the following is an R code:
+
+-----
+misfilestocopy <- dir("./suppa2_data/BAM_rMATS/1M",pattern = "*sortedByCoord.out.bam$",full.names = T)
+namesfiles <- dir("./suppa2_data/BAM_rMATS/1M/",pattern = "*sortedByCoord.out.bam$",full.names = F)
+pathtocope <- "./suppa2_data/BAM_withchr/1M"
+
+command2 <- paste0("ln ",misfilestocopy," ",pathtocope,"/",namesfiles)
+
+sapply(command2,system)
+system(command2)
+-----
+
+
+#then, from comman line:
+
+for file in ./simulation_data/BAM_withchr/1M/*.bam
+do
+filename=`echo $file | cut -d "." -f 1`
+samtools view -H $file | \
+sed  -e 's/SN:\([0-9XY]*\)/SN:chr\1/' -e 's/SN:MT/SN:chrM/' | samtools reheader - $file > ./simulation_data/BAM_withchr/1M_prueba/${filename}_chr.bam
+done
+
+
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513329Aligned_chr.bam 
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513330Aligned_chr.bam 
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513331Aligned_chr.bam 
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513329_switched_A5_A3Aligned_chr.bam 
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513330_switched_A5_A3Aligned_chr.bam 
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513331_switched_A5_A3Aligned_chr.bam 
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513329_switched_SEAligned_chr.bam 
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513330_switched_SEAligned_chr.bam 
+samtools index -@ 16 ./simulation_data/BAM_withchr/1M/SRR1513331_switched_SEAligned_chr.bam 
+
