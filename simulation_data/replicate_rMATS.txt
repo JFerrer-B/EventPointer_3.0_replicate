@@ -1,0 +1,43 @@
+# replicate rMATS
+
+
+# index of steps:
+
+# 1. generate files for rMATS input (example for 1M is displayed)
+# 2. Apply rMATS without (th) option (example for 1M is displayed)
+# 3. Apply rMATS with (th) option (example for 1M is displayed)
+
+
+### 1. generate rMATS input .txt files (example for 1M is displayed)
+
+# create three different .txt files called: 'a5_a3_samples.txt', 'ref_samples.txt', and 'se_samples.txt'.
+# Each .txt file show the following:
+
+./simulation_data/BAM_rMATS/1M/SRR1513329_switched_A5_A3Aligned.sortedByCoord.out.bam,./simulation_data/BAM_rMATS/1M/SRR1513330_switched_A5_A3Aligned.sortedByCoord.out.bam,./simulation_data/BAM_rMATS/1M/SRR1513331_switched_A5_A3Aligned.sortedByCoord.out.bam
+
+./simulation_data/BAM_rMATS/1M/SRR1513329Aligned.sortedByCoord.out.bam,./simulation_data/BAM_rMATS/1M/SRR1513330Aligned.sortedByCoord.out.bam,./simulation_data/BAM_rMATS/1M/SRR1513331Aligned.sortedByCoord.out.bam
+
+./simulation_data/BAM_rMATS/1M/SRR1513329_switched_SEAligned.sortedByCoord.out.bam,./simulation_data/BAM_rMATS/1M/SRR1513330_switched_SEAligned.sortedByCoord.out.bam,./simulation_data/BAM_rMATS/1M/SRR1513331_switched_SEAligned.sortedByCoord.out.bam
+
+
+
+### 2. run rMATS without the (th) option (example for 1M is displayed)
+
+python path-rMATSrmats.py --b1 ./suppa2_simulacion/rMATS_output/1M/ref_samples.txt --b2 ./suppa2_simulacion/rMATS_output/1M/a5_a3_samples.txt --gtf ./simulation_data/SUPPA_supplementary_data/annotation/refseq_hg19.formatted.gtf -t single --readLength 100 --nthread 12 --od ./suppa2_simulacion/rMATS_output/1M/a5_a3_vs_ref --tmp ./suppa2_simulacion/rMATS_output/1M/a5_a3_vs_ref --variable-read-length
+
+python path-rMATSrmats.py --b1 ./suppa2_simulacion/rMATS_output/1M/ref_samples.txt --b2 ./suppa2_simulacion/rMATS_output/1M/se_samples.txt --gtf ./simulation_data/SUPPA_supplementary_data/annotation/refseq_hg19.formatted.gtf -t single --readLength 100 --nthread 12 --od ./suppa2_simulacion/rMATS_output/1M/se_vs_ref --tmp ./suppa2_simulacion/rMATS_output/1M/se_vs_ref --variable-read-length
+
+
+
+### 3. run rMATS with the (th) option (example for 1M is displayed)
+
+
+python path-rMATSrmats.py --b1 ./suppa2_simulacion/rMATS_th_output/1M/ref_samples.txt --b2 ./suppa2_simulacion/rMATS_th_output/1M/a5_a3_samples.txt --gtf ./simulation_data/SUPPA_supplementary_data/annotation/refseq_hg19.formatted.gtf -t single --readLength 100 --nthread 12 --od ./suppa2_simulacion/rMATS_th_output/1M/a5_a3_vs_ref --tmp ./suppa2_simulacion/rMATS_th_output/1M/a5_a3_vs_ref --variable-read-length --cstat 0.1
+
+python path-rMATSrmats.py --b1 ./suppa2_simulacion/rMATS_th_output/1M/ref_samples.txt --b2 ./suppa2_simulacion/rMATS_th_output/1M/se_samples.txt --gtf ./simulation_data/SUPPA_supplementary_data/annotation/refseq_hg19.formatted.gtf -t single --readLength 100 --nthread 12 --od ./suppa2_simulacion/rMATS_th_output/1M/se_vs_ref --tmp ./suppa2_simulacion/rMATS_th_output/1M/se_vs_ref --variable-read-length --cstat 0.1
+
+
+
+
+
+

@@ -1,0 +1,1 @@
+directory where to save the output of MAJIQ both with and without (th) option

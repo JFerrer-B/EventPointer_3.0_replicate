@@ -1,0 +1,66 @@
+# replicate MAJIQ 
+
+
+
+# index of steps:
+
+# 1. create confile.txt (example for 1M is displayed)
+# 2. run MAJIQ build (example for 1M is displayed)
+# 3. run MAJIQ deltapsi (example for 1M is displayed)
+# 4. run MAJIQ-VOILA without (th) option (example for 1M is displayed)
+# 5. run MAJIQ-VOILA with (th) option (example for 1M is displayed)
+
+
+### 1. create confile.txt (example for 1M is displayed)
+
+- the config.txt file containing the following text:
+
+[info]
+bamdirs=./simulation_data/BAM_withchr/1M
+genome=hg19
+[experiments]
+ref_samples=SRR1513329Aligned_chr,SRR1513330Aligned_chr,SRR1513331Aligned_chr
+a5_a3_samples=SRR1513329_switched_A5_A3Aligned_chr,SRR1513330_switched_A5_A3Aligned_chr,SRR1513331_switched_A5_A3Aligned_chr
+se_samples=SRR1513329_switched_SEAligned_chr,SRR1513330_switched_SEAligned_chr,SRR1513331_switched_SEAligned_chr
+
+
+
+### 2. run MAJIQ build (example for 1M is displayed)
+
+majiq build ./simulation_data/annotation/ensembl.hg19.gff3 -c ./simulation_data/majic_output/1M/confifile.txt -j 12 -o ./simulation_data/majic_output/1M/build
+
+
+### 3. run MAJIQ deltapsi (example for 1M is displayed)
+
+majiq deltapsi -o ./simulation_data/majic_output/1M/deltapsi -grp1 ./simulation_data/majic_output/1M/build/SRR1513329Aligned_chr.majiq ./simulation_data/majic_output/1M/build/SRR1513330Aligned_chr.majiq ./simulation_data/majic_output/1M/build/SRR1513331Aligned_chr.majiq -grp2 ./simulation_data/majic_output/1M/build/SRR1513329_switched_A5_A3Aligned_chr.majiq ./simulation_data/majic_output/1M/build/SRR1513330_switched_A5_A3Aligned_chr.majiq ./simulation_data/majic_output/1M/build/SRR1513331_switched_A5_A3Aligned_chr.majiq -n ref_samples a5_a3_samples --default-prior
+
+majiq deltapsi -o ./simulation_data/majic_output/1M/deltapsi -grp1 ./simulation_data/majic_output/1M/build/SRR1513329Aligned_chr.majiq ./simulation_data/majic_output/1M/build/SRR1513330Aligned_chr.majiq ./simulation_data/majic_output/1M/build/SRR1513331Aligned_chr.majiq -grp2 ./simulation_data/majic_output/1M/build/SRR1513329_switched_SEAligned_chr.majiq ./simulation_data/majic_output/1M/build/SRR1513330_switched_SEAligned_chr.majiq ./simulation_data/majic_output/1M/build/SRR1513331_switched_SEAligned_chr.majiq -n ref_samples se_samples --default-prior
+
+
+### 4. run MAJIQ-VOILA without (th) (example for 1M is displayed)
+
+
+voila tsv ./simulation_data/majic_output/1M/build/splicegraph.sql \
+./simulation_data/majic_output/1M/deltapsi/ref_samples_se_samples.deltapsi.voila \
+--threshold 0.0001 --show-all -f ./simulation_data/majic_output/1M/voila_ref_vs_se.tsv
+
+voila tsv ./simulation_data/majic_output/1M/build/splicegraph.sql \
+./simulation_data/majic_output/1M/deltapsi/ref_samples_a5_a3_samples.deltapsi.voila \
+--threshold 0.0001 --show-all -f ./simulation_data/majic_output/1M/voila_ref_vs_a5_a3.tsv
+
+
+
+### 5. run MAJIQ-VOILA with (th) option (example for 1M is displayed)
+
+voila tsv ./simulation_data/majic_output/1M/build/splicegraph.sql \
+./simulation_data/majic_output/1M/deltapsi/ref_samples_se_samples.deltapsi.voila \
+--threshold 0.1 --show-all -f ./simulation_data/majic_output/1M/voila_ref_vs_se_th_01.tsv
+
+voila tsv ./simulation_data/majic_output/1M/build/splicegraph.sql \
+./simulation_data/majic_output/1M/deltapsi/ref_samples_a5_a3_samples.deltapsi.voila \
+--threshold 0.1 --show-all -f ./simulation_data/majic_output/1M/voila_ref_vs_a5_a3_th_01.tsv
+
+
+
+
+
