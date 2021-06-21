@@ -1,0 +1,18 @@
+# replicate kallisto (for suppa2 and EP_ST and EP_ML input)
+
+
+## index steps:
+
+#1. create index
+#2. run kallisto
+
+
+### 1. create index
+
+nohup kallisto index --index ./HVS_dataset/kallisto_index/grcha37.65.idx ./HVS_dataset/Homo_sapiens.GRCh37.65.cdna.all.fa > ./HVS_dataset/kallisto_index.out
+
+
+### 2. run kallisto
+
+kallisto quant -i ./HVS_dataset/kallisto_index/grcha37.65.idx -o ./HVS_dataset/kallisto_output/SRR536342 -b 100 -t 2 ./path_fastq_files/SRR536342_1.fastq ./path_fastq_files/SRR536342_2.fastq
+

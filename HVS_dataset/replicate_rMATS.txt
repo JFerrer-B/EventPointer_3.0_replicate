@@ -1,0 +1,24 @@
+#replicate_rMATS
+
+# index steps:
+
+#1. create .txt input files
+#2. run rMATS 
+
+### 1. create .txt input files
+
+- create files called pc3e_samples.txt and ref_samples.txt and save them in the directory:
+"./HVS_dataset/rMATS/"
+
+
+each .txt file show, respectively:
+
+./HVS_dataset/bam_files/SRR536348Aligned.sortedByCoord.out.bam,./HVS_dataset/bam_files/SRR536350Aligned.sortedByCoord.out.bam,./HVS_dataset/bam_files/SRR536352Aligned.sortedByCoord.out.bam
+./HVS_dataset/bam_files/SRR536342Aligned.sortedByCoord.out.bam,./HVS_dataset/bam_files/SRR536344Aligned.sortedByCoord.out.bam,./HVS_dataset/bam_files/SRR536346Aligned.sortedByCoord.out.bam
+
+
+
+python path_rmats/rmats.py --b1 ./HVS_dataset/rMATS/ref_samples.txt --b2 ./HVS_dataset/rMATS/pc3e_samples.txt --gtf ./HVS_dataset/annotation/Homo_sapiens.GRCh37.65.gtf -t single --readLength 100 --nthread 16 --od ./HVS_dataset/rMATS/pc3e_vs_gs689 --tmp ./HVS_dataset/rMATS/pc3e_vs_gs689 --variable-read-length
+
+
+

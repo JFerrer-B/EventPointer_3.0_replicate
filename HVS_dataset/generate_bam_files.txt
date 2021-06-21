@@ -1,0 +1,70 @@
+# generate BAM files
+
+## index steps:
+
+# 1. build index
+# 2. run STAR aligner
+# 3. add chr for MAJIQ
+
+
+
+### 1. build index
+
+STAR --runThreadN 12                                                                                        \
+--runMode genomeGenerate                                                                                    \
+--genomeDir ./HVS_dataset/annotation/STAR_INDEX_GOODFASTA_100NT/                           \
+--genomeFastaFiles ./HVS_dataset/annotation/Homo_sapiens.GRCh37.74.dna.primary_assembly.fa \
+--sjdbGTFfile ./HVS_dataset/annotation/Homo_sapiens.GRCh37.65.sorted.gtf                   \
+--sjdbOverhang 100                                                                                          \
+--limitGenomeGenerateRAM 60858748512
+
+
+
+### 2. run STAR aligner
+
+ STAR --runThreadN 16 --genomeDir ./HVS_dataset/annotation/STAR_INDEX_GOODFASTA_100NT/ --readFilesIn ./path_fastq_files/SRS354082/SRR536342_1.fastq ./path_fastq_files/SRS354082/SRR536342_2.fastq --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3 --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./HVS_dataset/bam_files/SRR536342 
+ STAR --runThreadN 16 --genomeDir ./HVS_dataset/annotation/STAR_INDEX_GOODFASTA_100NT/ --readFilesIn ./path_fastq_files/SRS354082/SRR536344_1.fastq ./path_fastq_files/SRS354082/SRR536344_2.fastq --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3 --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./HVS_dataset/bam_files/SRR536344 
+ STAR --runThreadN 16 --genomeDir ./HVS_dataset/annotation/STAR_INDEX_GOODFASTA_100NT/ --readFilesIn ./path_fastq_files/SRS354082/SRR536346_1.fastq ./path_fastq_files/SRS354082/SRR536346_2.fastq --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3 --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./HVS_dataset/bam_files/SRR536346 
+ STAR --runThreadN 16 --genomeDir ./HVS_dataset/annotation/STAR_INDEX_GOODFASTA_100NT/ --readFilesIn ./path_fastq_files/SRS354082/SRR536348_1.fastq ./path_fastq_files/SRS354082/SRR536348_2.fastq --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3 --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./HVS_dataset/bam_files/SRR536348 
+ STAR --runThreadN 16 --genomeDir ./HVS_dataset/annotation/STAR_INDEX_GOODFASTA_100NT/ --readFilesIn ./path_fastq_files/SRS354082/SRR536350_1.fastq ./path_fastq_files/SRS354082/SRR536350_2.fastq --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3 --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./HVS_dataset/bam_files/SRR536350 
+ STAR --runThreadN 16 --genomeDir ./HVS_dataset/annotation/STAR_INDEX_GOODFASTA_100NT/ --readFilesIn ./path_fastq_files/SRS354082/SRR536352_1.fastq ./path_fastq_files/SRS354082/SRR536352_2.fastq --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3 --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./HVS_dataset/bam_files/SRR536352  
+
+
+
+ samtools sort -@ 16 ./HVS_dataset/bam_files/SRR536342Aligned.out.bam > ./HVS_dataset/bam_files/SRR536342Aligned.sortedByCoord.out.bam 
+ samtools sort -@ 16 ./HVS_dataset/bam_files/SRR536344Aligned.out.bam > ./HVS_dataset/bam_files/SRR536344Aligned.sortedByCoord.out.bam 
+ samtools sort -@ 16 ./HVS_dataset/bam_files/SRR536346Aligned.out.bam > ./HVS_dataset/bam_files/SRR536346Aligned.sortedByCoord.out.bam 
+ samtools sort -@ 16 ./HVS_dataset/bam_files/SRR536348Aligned.out.bam > ./HVS_dataset/bam_files/SRR536348Aligned.sortedByCoord.out.bam 
+ samtools sort -@ 16 ./HVS_dataset/bam_files/SRR536350Aligned.out.bam > ./HVS_dataset/bam_files/SRR536350Aligned.sortedByCoord.out.bam 
+ samtools sort -@ 16 ./HVS_dataset/bam_files/SRR536352Aligned.out.bam > ./HVS_dataset/bam_files/SRR536352Aligned.sortedByCoord.out.bam
+
+ samtools index -@ 16 ./HVS_dataset/bam_files/SRR536342Aligned.sortedByCoord.out.bam 
+ samtools index -@ 16 ./HVS_dataset/bam_files/SRR536344Aligned.sortedByCoord.out.bam 
+ samtools index -@ 16 ./HVS_dataset/bam_files/SRR536346Aligned.sortedByCoord.out.bam 
+ samtools index -@ 16 ./HVS_dataset/bam_files/SRR536348Aligned.sortedByCoord.out.bam 
+ samtools index -@ 16 ./HVS_dataset/bam_files/SRR536350Aligned.sortedByCoord.out.bam 
+ samtools index -@ 16 ./HVS_dataset/bam_files/SRR536352Aligned.sortedByCoord.out.bam 
+
+
+### 3. add chr for MAJIQ
+
+## run the following for all the samples:
+
+ln ./HVS_dataset/bam_files/SRR6173165Aligned.sortedByCoord.out.bam ./HVS_dataset/bam_files_majiq/SRR6173165Aligned.sortedByCoord.out.bam
+
+
+##in the directory bam_files_majiq
+
+for file in ./*.bam
+do
+filename=`echo $file | cut -d "." -f 1`
+samtools view -H $file | \
+sed  -e 's/SN:\([0-9XY]*\)/SN:chr\1/' -e 's/SN:MT/SN:chrM/' | samtools reheader - $file > ${filename}_chr.bam
+done
+
+
+samtools index -@ 16 ./HVS_dataset/bam_files_majiq/SRR6173165Aligned_chr.bam
+
+
+
+

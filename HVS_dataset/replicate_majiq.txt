@@ -1,0 +1,35 @@
+# replicate_majiq
+
+# index of steps:
+#1. create confile .txt file
+#2. run MAJIQ build
+#3. run MAJIQ deltapsi
+
+
+
+###1. create confile .txt file:
+
+[info]
+bamdirs=./HVS_dataset/BAM_2_majiq
+genome=hg19
+[experiments]
+gs689=SRR536342Aligned_chr,SRR536344Aligned_chr,SRR536346Aligned_chr
+pc3e=SRR536348Aligned_chr,SRR536350Aligned_chr,SRR536352Aligned_chr
+
+
+###2. run MAJIQ build
+
+majiq build ./HVS_dataset/annotation/ensembl.hg19.gff3 -c ./HVS_dataset/MAJIQ/config.txt -j 12 -o ./HVS_dataset/MAJIQ/build
+
+###3. run MAJIQ deltapsi
+
+majiq deltapsi -o ./HVS_dataset/MAJIQ/deltapsi -grp1 ./HVS_dataset/MAJIQ/build/SRR536342Aligned_chr.majiq ./HVS_dataset/MAJIQ/build/SRR536344Aligned_chr.majiq ./HVS_dataset/MAJIQ/build/SRR536346Aligned_chr.majiq -grp2 ./HVS_dataset/MAJIQ/build/SRR536348Aligned_chr.majiq ./HVS_dataset/MAJIQ/build/SRR536350Aligned_chr.majiq ./HVS_dataset/MAJIQ/build/SRR536352Aligned_chr.majiq -n gs689 pc3e
+
+####4. run majiq voila
+
+voila tsv ./HVS_dataset/MAJIQ/build/splicegraph.sql \
+./HVS_dataset/MAJIQ/deltapsi/gs689_pc3e.deltapsi.voila \
+--threshold 0.0001 --show-all -f ./HVS_dataset/MAJIQ/viola_output.tsv
+
+
+

@@ -1,0 +1,89 @@
+#replicate_suppa2
+
+### replicate suppa2
+
+# index of steps:
+
+#1. get all events from reference transcriptome
+#2. build .txt files with the epxression of the transcripts
+#3. get psi:
+#4. run statistic:
+
+
+
+### 1. get all events from reference transcriptome
+
+suppa.py generateEvents \
+-i ./HVS_dataset/annotation/Homo_sapiens.GRCh37.65.sorted.gtf \
+-o ./HVS_dataset/annotation/Suppa2_events/GRCh37.65.events \
+-e SE SS MX RI FL -f ioe
+
+
+## put all together (run from directory)
+
+awk '
+FNR==1 && NR!=1 { while (/^seqname/) getline; }
+1 {print}
+' ./*ioe > ./GRCh37.65.pooled.ioe
+
+
+
+
+### 2. build .txt files with the epxression of the transcripts
+
+-the following is an R code:
+
+------
+
+PathToSamples <- "./HVS_dataset/kallisto_output"
+PathToSamples <- dir(PathToSamples,full.names = TRUE)
+type="kallisto"
+RNADATA_Kallisto <- getbootstrapdata(PathSamples = PathToSamples,type = type)
+
+
+ML_isoform_expression <- sapply(RNADATA_Kallisto,function(X) X[,1])
+dim(ML_isoform_expression)
+colnames(ML_isoform_expression)
+
+infosamples <- read.table(file = "./HVS_dataset/filereport_read_run_PRJNA172213_tsv.txt",stringsAsFactors = F,sep = "\t",header = T)
+# View(infosamples)
+dim(infosamples)
+infosamples <- infosamples[,1:3]
+Dmatrix <- cbind(1,rep(c(0,1),each=3))
+rownames(Dmatrix) <- infosamples$run_accession
+Dmatrix
+colnames(ML_isoform_expression)
+Cmatrix <- matrix(c(0,1),ncol=1)
+
+GS689_samples <- ML_isoform_expression[,1:3]
+pc3e_samples <- ML_isoform_expression[,4:6]
+
+write.table(x=GS689_samples,file="./HVS_dataset/suppa2/GS689_samples.txt",quote=F,sep="\t")
+write.table(x=pc3e_samples,file="./HVS_dataset/suppa2/pc3e_samples.txt",quote=F,sep="\t")
+
+
+------
+
+
+###3. get psi:
+
+suppa.py psiPerEvent --ioe ./HVS_dataset/annotation/Suppa2_events/GRCh37.65.pooled.ioe  --expression-file ./HVS_dataset/suppa2/GS689_samples.txt -o ./HVS_dataset/suppa2/GS689_samples
+
+suppa.py psiPerEvent --ioe ./HVS_dataset/annotation/Suppa2_events/GRCh37.65.pooled.ioe  --expression-file ./HVS_dataset/suppa2/pc3e_samples.txt -o ./HVS_dataset/suppa2/pc3e_samples
+
+
+###4. run statistic:
+
+suppa.py diffSplice --method empirical  --input ./HVS_dataset/annotation/Suppa2_events/GRCh37.65.pooled.ioe  --psi ./HVS_dataset/suppa2/GS689_samples.psi ./HVS_dataset/suppa2/pc3e_samples.psi  --tpm ./HVS_dataset/suppa2/GS689_samples.txt ./HVS_dataset/suppa2/pc3e_samples.txt -o ./HVS_dataset/suppa2/pc3e_VS_gs689_singc
+
+
+
+
+
+
+
+
+
+
+
+
