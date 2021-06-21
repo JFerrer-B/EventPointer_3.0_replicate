@@ -1,0 +1,39 @@
+#replicate_majiq
+
+
+#1. create confile .txt file
+###2. run MAJIQ build
+###3. run MAJIQ deltapsi
+
+###1. create confile .txt file
+
+[info]
+bamdirs=./cx4945/bam_files_majiq
+genome=hg19
+[experiments]
+dmso=SRR6173170Aligned_chr,SRR6173171Aligned_chr,SRR6173172Aligned_chr,SRR6173173Aligned_chr,SRR6173174Aligned_chr,SRR6173180Aligned_chr,SRR6173181Aligned_chr,SRR6173182Aligned_chr,SRR6173183Aligned_chr,SRR6173184Aligned_chr,SRR6173190Aligned_chr,SRR6173191Aligned_chr,SRR6173192Aligned_chr,SRR6173193Aligned_chr,SRR6173194Aligned_chr
+cx4945=SRR6173165Aligned_chr,SRR6173166Aligned_chr,SRR6173167Aligned_chr,SRR6173168Aligned_chr,SRR6173169Aligned_chr,SRR6173175Aligned_chr,SRR6173176Aligned_chr,SRR6173177Aligned_chr,SRR6173178Aligned_chr,SRR6173179Aligned_chr,SRR6173185Aligned_chr,SRR6173186Aligned_chr,SRR6173187Aligned_chr,SRR6173188Aligned_chr,SRR6173189Aligned_chr
+
+
+
+###2. run MAJIQ build
+
+majiq build ./cx4945/annotation/ensembl.hg19.gff3 -c ./cx4945/MAJIQ/config.txt -j 12 -o ./cx4945/MAJIQ/build
+
+
+###3. run MAJIQ deltapsi
+
+majiq deltapsi -o ./cx4945/MAJIQ/deltapsi -grp1 ./cx4945/MAJIQ/build/SRR6173170Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173171Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173172Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173173Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173174Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173180Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173181Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173182Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173183Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173184Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173190Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173191Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173192Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173193Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173194Aligned_chr.majiq -grp2 ./cx4945/MAJIQ/build/SRR6173165Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173166Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173167Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173168Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173169Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173175Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173176Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173177Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173178Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173179Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173185Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173186Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173187Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173188Aligned_chr.majiq ./cx4945/MAJIQ/build/SRR6173189Aligned_chr.majiq -n dmso cx4945
+
+####4. run majiq voila
+
+voila tsv ./cx4945/MAJIQ/build/splicegraph.sql \
+./cx4945/MAJIQ/deltapsi/dmso_cx4945.deltapsi.voila \
+--threshold 0.0001 --show-all -f ./cx4945/MAJIQ/viola_output.tsv
+
+
+
+
+
+
+

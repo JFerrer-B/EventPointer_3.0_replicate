@@ -1,0 +1,112 @@
+### replicate suppa2
+
+# index of steps:
+
+#1. get all events from reference transcriptome
+#2. build .txt files with the epxression of the transcripts
+#3. get psi:
+#4. run statistic:
+
+### 1. get all events from reference transcriptome:
+
+suppa.py generateEvents \
+-i ./cx4945_dataset/annotation/Homo_sapiens.GRCh37.74.formatted.gtf \
+-o ./cx4945_dataset/Suppa2_events/GRCh37.74.events \
+-e SE SS MX RI FL -f ioe
+
+
+# put all together (run in the directory ./cx4945_dataset/Suppa2_events/)
+
+awk '
+FNR==1 && NR!=1 { while (/^seqname/) getline; }
+1 {print}
+' ./*ioe > ./GRCh37.74.events.pooled.ioe
+
+
+
+### 2. build .txt files with the epxression of the transcripts:
+
+## the following is a R code:
+
+-----
+library(tximport)
+PathSamples <- dir("./cx4945_dataset/kallisto_output",full.names = TRUE)
+namesfiles <- gsub(".*/","",PathSamples)
+PathSamples <- paste0(PathSamples,"/abundance.h5")
+names(PathSamples) <- namesfiles
+sapply(PathSamples,file.exists)
+txi.inf.rep <- tximport(PathSamples, type = "kallisto", txOut = TRUE,countsFromAbundance="no",dropInfReps = FALSE)
+
+mydata <- txi.inf.rep$abundance
+infosamples <- read.table(file = "./cx4945_dataset/SraRunTable.txt",stringsAsFactors = F,sep = ",",header = T)
+infosamples <- infosamples[match(colnames(mydata),infosamples$Run),]
+
+celltype <- factor(infosamples$cell_line,levels = c("SUM-149","MDA-MB-231","MDA-MB-468"))
+Dmatrix <- model.matrix(~celltype)
+colnames(Dmatrix) <- levels(celltype)
+rownames(Dmatrix) <- paste0(infosamples$cell_line,"_",infosamples$agent)
+Dmatrix <- cbind(Dmatrix,(infosamples$agent=="CX4945")+0)
+colnames(Dmatrix)[4] <- "Treatment_CX4945"
+
+#### we generated separating by each condition
+misceltypes <- levels(celltype)
+for(n in 1:length(misceltypes)){
+  llx <- match(misceltypes[n],colnames(Dmatrix))
+  if(llx==1){
+    wwx_1 <- which(Dmatrix[,1]==1 & Dmatrix[,2]==0 & Dmatrix[,3]==0 & Dmatrix[,4]==0)
+    write.table(x=mydata[,wwx_1],file = paste0("./cx4945_dataset/suppa2/",unique(names(wwx_1)),".txt"),quote = F,sep = "\t")
+    
+    wwx_2 <- which(Dmatrix[,1]==1 & Dmatrix[,2]==0 & Dmatrix[,3]==0 & Dmatrix[,4]==1)
+    write.table(x=mydata[,wwx_2],file = paste0("./cx4945_dataset/suppa2/",unique(names(wwx_2)),".txt"),quote = F,sep = "\t")
+  }else{
+    wwx_1 <- which(Dmatrix[,llx]==1 & Dmatrix[,4]==0)
+    write.table(x=mydata[,wwx_1],file = paste0("./cx4945_dataset/suppa2/",unique(names(wwx_1)),".txt"),quote = F,sep = "\t")
+    
+    wwx_2 <- which(Dmatrix[,llx]==1 & Dmatrix[,4]==1)
+    write.table(x=mydata[,wwx_2],file = paste0("./cx4945_dataset/suppa2/",unique(names(wwx_2)),".txt"),quote = F,sep = "\t")
+  }
+}
+
+
+### cbind all the matrices
+
+
+filestoread <- dir("/home/external_HDD/HDD_1/Devel_EP/JuanPis_comparisson_expresssion/suppa2_grch37.74",pattern = "*.txt",full.names = TRUE)
+
+readoriginals <- filestoread[grep("DMSO",filestoread)]
+
+originals_1 <- read.table(file = readoriginals[1],header = T,sep = "\t",stringsAsFactors = F)
+originals_2 <- read.table(file = readoriginals[2],header = T,sep = "\t",stringsAsFactors = F)
+originals_3 <- read.table(file = readoriginals[3],header = T,sep = "\t",stringsAsFactors = F)
+
+originals <- cbind(originals_1,originals_2,originals_3)
+
+readtreated <- filestoread[grep("CX4945",filestoread)]
+
+treated_1 <- read.table(file = readtreated[1],header = T,sep = "\t",stringsAsFactors = F)
+treated_2 <- read.table(file = readtreated[2],header = T,sep = "\t",stringsAsFactors = F)
+treated_3 <- read.table(file = readtreated[3],header = T,sep = "\t",stringsAsFactors = F)
+
+treated <- cbind(treated_1,treated_2,treated_3)
+
+
+write.table(x=originals,file = paste0("./cx4945_dataset/suppa2/originals.txt"),quote = F,sep = "\t")
+write.table(x=treated,file = paste0("./cx4945_dataset/suppa2/treated.txt"),quote = F,sep = "\t")
+
+-----
+
+### 3. get psi:
+
+suppa.py psiPerEvent --ioe ./cx4945_dataset/suppa2_events/grch37.74.pooled.ioe  --expression-file /cx4945_dataset/suppa2/originals.txt -o /cx4945_dataset/suppa2/originals
+
+suppa.py psiPerEvent --ioe ./cx4945_dataset/suppa2_events/grch37.74.pooled.ioe  --expression-file /cx4945_dataset/suppa2/treated.txt -o /cx4945_dataset/suppa2/treated
+
+
+### 4. run statistic:
+
+
+suppa.py diffSplice --method empirical  --input ./cx4945_dataset/suppa2_events/grch37.74.pooled.ioe  --psi ./cx4945_dataset/suppa2/originals.psi ./cx4945_dataset/suppa2/treated.psi --tpm ./cx4945_dataset/suppa2/originals.txt ./cx4945_dataset/suppa2/treated.txt -o /cx4945_dataset/suppa2/alltogether
+
+
+
+

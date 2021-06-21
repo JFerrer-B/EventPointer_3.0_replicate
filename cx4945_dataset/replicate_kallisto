@@ -1,0 +1,17 @@
+# replicate kallisto (for suppa2 and EP_ST and EP_ML input)
+
+
+## index steps:
+
+#1. create index
+#2. run kallisto
+
+
+### 1. create index
+
+kallisto index --index ./cx4945_dataset/annotation/grcha37.74.idx ./cx4945_dataset/annotation/Homo_sapiens.GRCh37.74.cdna.all.fa
+
+
+### 2. run kallisto
+
+kallisto quant -i ./cx4945_dataset/annotation/grcha37.74.idx -o ./cx4945_dataset/kallisto_output/SRR6173165 -b 100 -t 2 ./path_fastq_files/SRR6173165/SRR6173165_1.fastq.gz ./path_fastq_files/SRR6173165/SRR6173165_2.fastq.gz

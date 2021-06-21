@@ -1,0 +1,46 @@
+#replicate_rMATS
+
+
+# index steps:
+
+#1. create .txt input files
+#2. run rMATS 
+
+
+
+
+
+### 1. create .txt input files
+
+- create files called cx4945_samples.txt and dmso_samples.txt and save them in the directory:
+"./cx4945_dataset/rMATS/"
+
+each .txt file show, respectively:
+
+./cx4945_dataset/bam_files/SRR6173165Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173166Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173167Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173168Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173169Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173175Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173176Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173177Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173178Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173179Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173185Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173186Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173187Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173188Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173189Aligned.sortedByCoord.out.bam
+
+
+./cx4945_dataset/bam_files/SRR6173170Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173171Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173172Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173173Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173174Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173180Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173181Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173182Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173183Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173184Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173190Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173191Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173192Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173193Aligned.sortedByCoord.out.bam,./cx4945_dataset/bam_files/SRR6173194Aligned.sortedByCoord.out.bam
+
+
+
+### 2. run rMATS 
+
+python path-rMATS/rmats.py --b1 ./cx4945_dataset/rMATS/dmso_samples.txt --b2 ./cx4945_dataset/rMATS/cx4945_samples.txt --gtf ./cx4945_dataset/annotation/Homo_sapiens.GRCh37.74.gtf -t single --readLength 100 --nthread 12 --od ./cx4945_dataset/rMATS/cx4945_vs_dmso --tmp ./cx4945_dataset/rMATS/cx4945_vs_dmso --variable-read-length
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

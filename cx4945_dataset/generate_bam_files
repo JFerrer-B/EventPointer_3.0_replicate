@@ -1,0 +1,53 @@
+# generate BAM files
+
+## index steps:
+
+# 1. build index
+# 2. run STAR aligner
+# 3. add chr for MAJIQ
+
+### 1. build inex:
+
+
+nohup STAR --runThreadN 12 \
+--runMode genomeGenerate \
+--genomeDir ./cx4945_dataset/annotation/starDir_100nt/ \
+--genomeFastaFiles ./cx4945_dataset/annotation/Homo_sapiens.GRCh37.74.dna.primary_assembly.fa \
+--sjdbGTFfile ./cx4945_dataset/annotation/Homo_sapiens.GRCh37.74.sorted.gtf \
+--sjdbOverhang 100 \
+--limitGenomeGenerateRAM 60858748512 > ./cx4945_dataset/annotation/star_index.out
+
+
+#### 2. run STAR aligner (exmple for 1 sample is displayed)
+
+STAR --runThreadN 16 --genomeDir ./cx4945_dataset/annotation/starDir_100nt/ --readFilesIn ./path_fastq_files/SRR6173165/SRR6173165_1.fastq ./path_fastq_files/SRR6173165/SRR6173165_2.fastq --alignEndsType EndToEnd --chimSegmentMin 2 --outFilterMismatchNmax 3 --outSAMtype BAM Unsorted --alignIntronMax 299999 --outFileNamePrefix ./cx4945_dataset/bam_files/SRR6173165 
+
+
+samtools sort -@ 16 ./cx4945_dataset/bam_files/SRR6173165Aligned.out.bam > ./cx4945_dataset/bam_files/SRR6173165Aligned.sortedByCoord.out.bam 
+
+
+samtools index -@ 16 ./cx4945_dataset/bam_files/SRR6173165Aligned.sortedByCoord.out.bam 
+
+
+#### 3. add chr for MAJIQ (example for 1 sample)
+
+#run the following code in commnd line (run from the directory where the .bam files are stored, if not, the code will no work downstream:
+
+ln ./cx4945_dataset/bam_files/SRR6173165Aligned.sortedByCoord.out.bam ./cx4945_dataset/bam_files_majiq/SRR6173165Aligned.sortedByCoord.out.bam
+
+----
+for file in ./cx4945_dataset/bam_files_majiq/*.bam
+do
+filename=`echo $file | cut -d "." -f 1`
+samtools view -H $file | \
+sed  -e 's/SN:\([0-9XY]*\)/SN:chr\1/' -e 's/SN:MT/SN:chrM/' | samtools reheader - $file > ${filename}_chr.bam
+done
+----
+
+#then, again in command line:
+
+samtools index -@ 16 ./cx4945_dataset/bam_files_majiq/SRR6173165Aligned_chr.bam
+
+
+
+
